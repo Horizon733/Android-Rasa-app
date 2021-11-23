@@ -4,14 +4,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,13 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.network.RasaButton
-import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
+import com.example.rasachatbotapp.network.message_dummy
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -78,8 +75,6 @@ fun TopBarSection(
 @Composable
 fun ChatSection(
     modifier: Modifier = Modifier,
-    viewModel: MainActivityViewModel,
-    chats: List<Message>? = null
 ) {
     val simpleDateFormat = SimpleDateFormat("h:mm a", Locale.ENGLISH)
     LazyColumn(
@@ -88,34 +83,16 @@ fun ChatSection(
             .padding(16.dp),
         reverseLayout = true
     ) {
-        if (chats == null){
-            items(viewModel.messages) { chat ->
-                MessageItem(
-                    messageText = chat.text,
-                    time = simpleDateFormat.format(chat.time),
-                    isOut = chat.isOut,
-                    image = chat.image,
-                    buttons = chat.buttons,
-                    viewModel = viewModel
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+        items(message_dummy) { chat ->
+            MessageItem(
+                messageText = chat.text,
+                time = simpleDateFormat.format(chat.time),
+                isOut = chat.isOut,
+                image = chat.image,
+                buttons = chat.buttons,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        else if (chats != null){
-            items(chats) { chat ->
-                MessageItem(
-                    messageText = chat.text,
-                    time = simpleDateFormat.format(chat.time),
-                    isOut = chat.isOut,
-                    image = chat.image,
-                    buttons = chat.buttons,
-                    viewModel = viewModel
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-
-
     }
 }
 
@@ -125,7 +102,6 @@ fun MessageItem(
     time: String,
     image: String?,
     buttons: List<RasaButton>?,
-    viewModel: MainActivityViewModel,
     isOut: Boolean
 ) {
     Column(
@@ -176,8 +152,8 @@ fun MessageItem(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        if(buttons != null){
-            ShowButtons(buttons, viewModel)
+        if (buttons != null) {
+            ShowButtons(buttons)
         }
 
         Text(
@@ -193,25 +169,15 @@ fun MessageItem(
 @Composable
 fun ShowButtons(
     buttons: List<RasaButton>,
-    viewModel: MainActivityViewModel
-){
+) {
     LazyRow(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(buttons){ button ->
+        items(buttons) { button ->
             Button(
-                onClick = {
-                    viewModel.sendMessagetoRasa(
-                        Message(
-                            text = button.payload,
-                            recipient_id = viewModel.username,
-                            time = Calendar.getInstance().time,
-                            isOut = true
-                        )
-                    )
-                },
+                onClick = {},
                 modifier = Modifier.clip(RoundedCornerShape(20.dp))
-            ){
+            ) {
                 Text(
                     button.title
                 )

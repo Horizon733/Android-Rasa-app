@@ -45,11 +45,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()) {
+fun MainScreen() {
     val context = LocalContext.current
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork = connectivityManager.activeNetworkInfo
-    viewModel._connectivityState.value = activeNetwork != null && activeNetwork.isConnected
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -57,18 +54,16 @@ fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()) {
         TopBarSection(
             username = "Bot",
             profile = painterResource(id=R.drawable.gojo),
-            isOnline = viewModel._connectivityState.value
+            isOnline = true
         )
-        ChatSection(Modifier.weight(1f), viewModel)
-        MessageSection(viewModel)
+        ChatSection(Modifier.weight(1f))
+        MessageSection()
     }
 
 }
 
 @Composable
-fun MessageSection(
-    viewModel: MainActivityViewModel,
-) {
+fun MessageSection() {
     val context = LocalContext.current
     Card(
         modifier = Modifier
@@ -90,22 +85,7 @@ fun MessageSection(
                     painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary,
-                    modifier = Modifier.clickable {
-                        if (viewModel._connectivityState.value){
-                            viewModel.sendMessagetoRasa(
-                                Message(
-                                    text = message.value,
-                                    recipient_id = viewModel.username,
-                                    time = Calendar.getInstance().time,
-                                    isOut = true
-                                )
-                            )
-                        }else{
-                            Toast.makeText(context, "Please connect to internet", Toast.LENGTH_SHORT).show()
-                        }
-
-                        message.value = ""
-                    }
+                    modifier = Modifier.clickable {}
                 )
             },
             modifier = Modifier
