@@ -72,7 +72,6 @@ fun TopBarSection(
 @Composable
 fun ChatSection(
     modifier: Modifier = Modifier,
-    viewModel: MainActivityViewModel
 ) {
     val simpleDateFormat = SimpleDateFormat("h:mm a", Locale.ENGLISH)
     LazyColumn(
