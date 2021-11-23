@@ -20,19 +20,23 @@ data class RasaButton(
 
 val message_dummy = listOf(
     Message(
-        text = "Hi",
-        recipient_id = "user"
-    ),
-    Message(
-        text = "Hi, How are you?",
-        recipient_id = "bot"
+        text = "Great!",
+        recipient_id = "bot",
+        isOut = false
     ),
     Message(
         text = "I am good",
-        recipient_id = "user"
+        recipient_id = "user",
+        isOut = true
     ),
     Message(
-        text = "Great!",
-        recipient_id = "bot"
+        text = "Hi, How are you?",
+        recipient_id = "bot",
+        isOut = false
     ),
+    Message(
+        text = "Hi",
+        recipient_id = "user",
+        isOut = true
+    )
 )
