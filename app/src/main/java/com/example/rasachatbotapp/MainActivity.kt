@@ -3,6 +3,7 @@ package com.example.rasachatbotapp
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,7 @@ import java.util.*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContent {
             RasaChatbotAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -108,7 +110,7 @@ fun MessageSection(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp),
+                .padding(10.dp),
         )
     }
 }
