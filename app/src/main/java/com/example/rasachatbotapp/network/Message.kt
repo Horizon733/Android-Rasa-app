@@ -7,14 +7,7 @@ data class Message(
     var text: String?=null,
     var recipient_id: String,
     var time: Long = Calendar.getInstance().timeInMillis,
-    var image: String? = "",
-    var isOut: Boolean = false,
-    var buttons: List<RasaButton>? = null
-)
-
-data class RasaButton(
-    val title: String,
-    val payload: String
+    var isOut: Boolean = false
 )
 
 
