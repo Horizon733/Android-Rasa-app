@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.rasachatbotapp.network.Message
-import com.example.rasachatbotapp.network.RasaButton
 import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,8 +93,6 @@ fun ChatSection(
                     messageText = chat.text,
                     time = simpleDateFormat.format(chat.time),
                     isOut = chat.isOut,
-                    image = chat.image,
-                    buttons = chat.buttons,
                     viewModel = viewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -107,8 +104,6 @@ fun ChatSection(
                     messageText = chat.text,
                     time = simpleDateFormat.format(chat.time),
                     isOut = chat.isOut,
-                    image = chat.image,
-                    buttons = chat.buttons,
                     viewModel = viewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -123,8 +118,6 @@ fun ChatSection(
 fun MessageItem(
     messageText: String?,
     time: String,
-    image: String?,
-    buttons: List<RasaButton>?,
     viewModel: MainActivityViewModel,
     isOut: Boolean
 ) {
@@ -156,29 +149,6 @@ fun MessageItem(
 
             }
         }
-        if (image != null) {
-            if (image != "") {
-                Spacer(modifier = Modifier.height(4.dp))
-                Surface(
-                    color = if (isOut) MaterialTheme.colors.primary else Color(0xFF616161),
-                    shape = if (isOut) AuthorChatBubbleShape else BotChatBubbleShape
-                ) {
-                    Image(
-                        painter = rememberImagePainter(
-                            data = image
-                        ),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(160.dp),
-                        contentDescription = "attached image"
-                    )
-                }
-
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        if(buttons != null){
-            ShowButtons(buttons, viewModel)
-        }
 
         Text(
             text = time,
@@ -190,34 +160,4 @@ fun MessageItem(
     }
 }
 
-@Composable
-fun ShowButtons(
-    buttons: List<RasaButton>,
-    viewModel: MainActivityViewModel
-){
-    LazyRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(buttons){ button ->
-            Button(
-                onClick = {
-                    viewModel.sendMessagetoRasa(
-                        Message(
-                            text = button.payload,
-                            recipient_id = viewModel.username,
-                            time = Calendar.getInstance().time,
-                            isOut = true
-                        )
-                    )
-                },
-                modifier = Modifier.clip(RoundedCornerShape(20.dp))
-            ){
-                Text(
-                    button.title
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-    }
-}
 
