@@ -2,41 +2,38 @@ package com.example.rasachatbotapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.example.rasachatbotapp.network.Message
+import com.example.rasachatbotapp.network.RasaButton
+import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
+import java.text.SimpleDateFormat
+import java.util.*
 
 val message = mutableStateOf("")
 
-val chats: List<Message> = listOf(
-    Message(
-        "Check it out!",
-        "me",
-        "8:07 PM"
-    ),
-    Message(
-        "Thank you!",
-        "me",
-        "8:06 PM"
-    ),
-)
+private val BotChatBubbleShape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 8.dp)
+private val AuthorChatBubbleShape = RoundedCornerShape(8.dp, 0.dp, 8.dp, 8.dp)
 
 @Composable
 fun TopBarSection(
@@ -81,54 +78,106 @@ fun TopBarSection(
 @Composable
 fun ChatSection(
     modifier: Modifier = Modifier,
-    viewModel: MainActivityViewModel = MainActivityViewModel()
+    viewModel: MainActivityViewModel,
+    chats: List<Message>? = null
 ) {
+    val simpleDateFormat = SimpleDateFormat("h:mm a", Locale.ENGLISH)
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
+        reverseLayout = true
     ) {
-        item {
-            for(index in viewModel.messages.indices){
-                val content = viewModel.messages[index]
+        if (chats == null){
+            items(viewModel.messages) { chat ->
                 MessageItem(
-                    content.text,
-                    content.time,
-                    content.recipient_id != viewModel.username
+                    messageText = chat.text,
+                    time = simpleDateFormat.format(chat.time),
+                    isOut = chat.isOut,
+                    image = chat.image,
+                    buttons = chat.buttons,
+                    viewModel = viewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-
         }
+        else if (chats != null){
+            items(chats) { chat ->
+                MessageItem(
+                    messageText = chat.text,
+                    time = simpleDateFormat.format(chat.time),
+                    isOut = chat.isOut,
+                    image = chat.image,
+                    buttons = chat.buttons,
+                    viewModel = viewModel
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+
+
     }
 }
 
 @Composable
 fun MessageItem(
-    messageText: String,
+    messageText: String?,
     time: String,
+    image: String?,
+    buttons: List<RasaButton>?,
+    viewModel: MainActivityViewModel,
     isOut: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = if (isOut) Alignment.End else Alignment.Start
     ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    if (isOut) MaterialTheme.colors.primary else Color(0xFF616161),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(
-                    top = 8.dp,
-                    bottom = 8.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                )
-        ) {
-            Text(
-                text = messageText,
-                color = Color.White
-            )
+        if (messageText != null) {
+            if (messageText != "") {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            if (isOut) MaterialTheme.colors.primary else Color(0xFF616161),
+                            shape = if (isOut) AuthorChatBubbleShape else BotChatBubbleShape
+                        )
+                        .padding(
+                            top = 8.dp,
+                            bottom = 8.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        )
+                ) {
+
+                    Text(
+                        text = messageText,
+                        color = Color.White
+                    )
+                }
+
+            }
+        }
+        if (image != null) {
+            if (image != "") {
+                Spacer(modifier = Modifier.height(4.dp))
+                Surface(
+                    color = if (isOut) MaterialTheme.colors.primary else Color(0xFF616161),
+                    shape = if (isOut) AuthorChatBubbleShape else BotChatBubbleShape
+                ) {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = image
+                        ),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(160.dp),
+                        contentDescription = "attached image"
+                    )
+                }
+
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        if(buttons != null){
+            ShowButtons(buttons, viewModel)
         }
 
         Text(
@@ -136,5 +185,39 @@ fun MessageItem(
             fontSize = 12.sp,
             modifier = Modifier.padding(start = 8.dp)
         )
+
+
     }
 }
+
+@Composable
+fun ShowButtons(
+    buttons: List<RasaButton>,
+    viewModel: MainActivityViewModel
+){
+    LazyRow(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(buttons){ button ->
+            Button(
+                onClick = {
+                    viewModel.sendMessagetoRasa(
+                        Message(
+                            text = button.payload,
+                            recipient_id = viewModel.username,
+                            time = Calendar.getInstance().time,
+                            isOut = true
+                        )
+                    )
+                },
+                modifier = Modifier.clip(RoundedCornerShape(20.dp))
+            ){
+                Text(
+                    button.title
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+    }
+}
+

@@ -3,24 +3,28 @@ package com.example.rasachatbotapp
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -53,15 +57,15 @@ fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()) {
             profile = painterResource(id=R.drawable.gojo),
             isOnline = viewModel._connectivityState.value
         )
-        ChatSection(Modifier.weight(1f))
-        MessageSection()
+        ChatSection(Modifier.weight(1f), viewModel)
+        MessageSection(viewModel)
     }
 
 }
 
 @Composable
 fun MessageSection(
-    viewModel: MainActivityViewModel = MainActivityViewModel()
+    viewModel: MainActivityViewModel,
 ) {
     val context = LocalContext.current
     Card(
@@ -86,21 +90,21 @@ fun MessageSection(
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.clickable {
                         if (viewModel._connectivityState.value){
-                            viewModel.addMessage(
+                            viewModel.sendMessagetoRasa(
                                 Message(
-                                    message.value,
-                                    viewModel.username,
-                                    Calendar.getInstance().time.toString()
+                                    text = message.value,
+                                    recipient_id = viewModel.username,
+                                    time = Calendar.getInstance().time,
+                                    isOut = true
                                 )
                             )
-                            message.value = ""
-
                         }else{
                             Toast.makeText(context, "Please connect to internet", Toast.LENGTH_SHORT).show()
                         }
+
+                        message.value = ""
                     }
                 )
-
             },
             modifier = Modifier
                 .fillMaxWidth()

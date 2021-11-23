@@ -9,7 +9,7 @@ import retrofit2.http.POST
 
 
 private val retrofit = Retrofit.Builder()
-    .baseUrl("https://rasa-horizon733.cloud.okteto.net/")
+    .baseUrl("https://rasa-horizon733.cloud.okteto.net")
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
