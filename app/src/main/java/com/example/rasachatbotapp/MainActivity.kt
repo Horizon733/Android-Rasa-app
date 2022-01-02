@@ -83,7 +83,7 @@ fun MessageSection() {
             trailingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_send),
-                    contentDescription = null,
+                    contentDescription = "send-icon",
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.clickable {}
                 )

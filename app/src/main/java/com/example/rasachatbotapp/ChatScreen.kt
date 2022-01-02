@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.rasachatbotapp.network.message_dummy
+import com.example.rasachatbotapp.ui.theme.Shapes
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,7 +51,7 @@ fun TopBarSection(
         ) {
             Image(
                 painter = profile,
-                contentDescription = null,
+                contentDescription = "profile-image",
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
