@@ -22,8 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavGraph
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.ui.theme.RasaChatbotAppTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -37,15 +41,18 @@ class MainActivity : ComponentActivity() {
             RasaChatbotAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MainScreen()
+                    DestinationsNavHost(navGraph = NavGraphs.root)
+//                    MainScreen()
                 }
             }
         }
     }
 }
 
+@Destination(start = true)
 @Composable
-fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()) {
+fun MainScreen(navigator: DestinationsNavigator) {
+    val viewModel = MainActivityViewModel()
     val context = LocalContext.current
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork = connectivityManager.activeNetworkInfo
@@ -57,9 +64,10 @@ fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()) {
         TopBarSection(
             username = "Bot",
             profile = painterResource(id=R.drawable.gojo),
-            isOnline = viewModel._connectivityState.value
+            isOnline = viewModel._connectivityState.value,
+            navigator = navigator
         )
-        ChatSection(Modifier.weight(1f), viewModel)
+        ChatSection(Modifier.weight(1f), viewModel, navigator = navigator)
         MessageSection(viewModel)
     }
 
@@ -119,6 +127,6 @@ fun MessageSection(
 @Composable
 fun DefaultPreview() {
     RasaChatbotAppTheme {
-        MainScreen()
+//        MainScreen()
     }
 }

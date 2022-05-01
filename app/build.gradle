@@ -1,7 +1,20 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.devtools.ksp' version '1.6.10-1.0.2'
 }
+
+kotlin {
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
+    }
+}
+
 
 android {
     compileSdk 31
@@ -70,4 +83,7 @@ dependencies {
     // coil
     implementation "io.coil-kt:coil-compose:$coil_version"
     implementation "io.coil-kt:coil-video:$coil_version"
+
+    implementation 'io.github.raamcosta.compose-destinations:core:1.1.2-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.1.2-beta'
 }
