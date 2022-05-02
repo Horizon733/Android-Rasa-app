@@ -1,10 +1,12 @@
 package com.example.rasachatbotapp
 
 import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.rasachatbotapp.network.*
+import com.example.rasachatbotapp.network.Message
+import com.example.rasachatbotapp.network.rasaApiService
 import kotlinx.coroutines.launch
 import java.util.*
 

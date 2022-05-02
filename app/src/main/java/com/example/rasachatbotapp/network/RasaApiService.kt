@@ -15,7 +15,7 @@ private val retrofit = Retrofit.Builder()
 
 val rasaApiService = retrofit.create(RasaApiService::class.java)
 
-interface RasaApiService{
+interface RasaApiService {
     @POST("webhooks/rest/webhook")
     suspend fun sendMessage(
         @Body message: Message

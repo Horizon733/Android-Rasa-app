@@ -1,13 +1,9 @@
 package com.example.rasachatbotapp
 
-import android.content.Context
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,19 +22,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.example.rasachatbotapp.destinations.OpenUrlDestination
 import com.example.rasachatbotapp.network.Carousel
 import com.example.rasachatbotapp.network.Message
 import com.example.rasachatbotapp.network.RasaButton
-import com.example.rasachatbotapp.network.UrlButton
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.text.SimpleDateFormat
 import java.util.*
@@ -53,8 +45,8 @@ private val AuthorChatBubbleShape = RoundedCornerShape(8.dp, 0.dp, 8.dp, 8.dp)
 @Composable
 fun TopBarSection(
     username: String,
-    profile: Painter?=null,
-    isOnline: Boolean?=null,
+    profile: Painter? = null,
+    isOnline: Boolean? = null,
     navigator: DestinationsNavigator
 ) {
     Card(
@@ -70,7 +62,7 @@ fun TopBarSection(
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if(profile != null) {
+            if (profile != null) {
                 Image(
                     painter = profile,
                     contentDescription = null,
@@ -78,7 +70,7 @@ fun TopBarSection(
                         .size(42.dp)
                         .clip(CircleShape)
                 )
-            }else{
+            } else {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "back",
@@ -107,7 +99,7 @@ fun TopBarSection(
 @Composable
 fun ChatSection(
     modifier: Modifier = Modifier,
-    viewModel: MainActivityViewModel?=null,
+    viewModel: MainActivityViewModel? = null,
     chats: List<Message>? = null,
     navigator: DestinationsNavigator
 ) {
@@ -118,7 +110,7 @@ fun ChatSection(
             .padding(vertical = 16.dp, horizontal = 6.dp),
         reverseLayout = true
     ) {
-        if (chats == null){
+        if (chats == null) {
             items(viewModel!!.messages) { chat ->
                 MessageItem(
                     messageText = chat.text,
@@ -132,8 +124,7 @@ fun ChatSection(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-        }
-        else if (chats != null){
+        } else if (chats != null) {
             items(chats) { chat ->
                 MessageItem(
                     messageText = chat.text,
@@ -160,7 +151,7 @@ fun MessageItem(
     image: String?,
     buttons: List<RasaButton>?,
     carousels: List<Carousel>?,
-    viewModel: MainActivityViewModel?=null,
+    viewModel: MainActivityViewModel? = null,
     isOut: Boolean,
     navigator: DestinationsNavigator
 ) {
@@ -211,11 +202,11 @@ fun MessageItem(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        if(buttons != null){
+        if (buttons != null) {
             ShowButtons(buttons, viewModel!!)
         }
         Spacer(modifier = Modifier.height(4.dp))
-        if(carousels != null){
+        if (carousels != null) {
             ShowCarousels(
                 carousels,
                 viewModel,
@@ -237,24 +228,24 @@ fun MessageItem(
 fun ShowButtons(
     buttons: List<RasaButton>,
     viewModel: MainActivityViewModel?
-){
+) {
     LazyRow(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(buttons){ button ->
+        items(buttons) { button ->
             Button(
                 onClick = {
                     viewModel!!.sendMessagetoRasa(
                         Message(
                             text = button.payload,
-                            recipient_id = viewModel!!.username,
+                            recipient_id = viewModel.username,
                             time = Calendar.getInstance().time,
                             isOut = true
                         )
                     )
                 },
                 modifier = Modifier.clip(RoundedCornerShape(20.dp))
-            ){
+            ) {
                 Text(
                     button.title
                 )
@@ -265,18 +256,17 @@ fun ShowButtons(
 }
 
 
-
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ShowCarousels(
     carousels: List<Carousel>,
     viewModel: MainActivityViewModel?,
     navigator: DestinationsNavigator
-){
+) {
     LazyRow(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(carousels){ carousel ->
+        items(carousels) { carousel ->
             CarouselItem(single_carousel = carousel, viewModel = viewModel, navigator = navigator)
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -290,7 +280,7 @@ fun CarouselItem(
     single_carousel: Carousel,
     viewModel: MainActivityViewModel?,
     navigator: DestinationsNavigator
-){
+) {
     Column(
         modifier = Modifier.border(
             width = 1.dp,
@@ -326,7 +316,7 @@ fun CarouselItem(
                 .fillMaxWidth()
                 .height(1.dp)
         )
-        if(single_carousel.button != null) {
+        if (single_carousel.button != null) {
             TextButton(
                 onClick = {
                     viewModel!!.sendMessagetoRasa(
@@ -339,23 +329,23 @@ fun CarouselItem(
                     )
                 },
                 modifier = Modifier.width(200.dp)
-            ){
+            ) {
                 Text(
                     single_carousel.button.title
                 )
             }
 
         }
-        if(single_carousel.link != null){
+        if (single_carousel.link != null) {
             TextButton(
                 onClick = { openUrl.value = true },
                 modifier = Modifier.width(200.dp)
-            ){
+            ) {
                 Text(
                     single_carousel.link.title
                 )
             }
-            if (openUrl.value){
+            if (openUrl.value) {
                 val context = LocalContext.current
                 navigator.navigate(direction = OpenUrlDestination(link = single_carousel.link.link))
             }
