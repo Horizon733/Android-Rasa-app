@@ -122,11 +122,3 @@ fun MessageSection(
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    RasaChatbotAppTheme {
-//        MainScreen()
-    }
-}
